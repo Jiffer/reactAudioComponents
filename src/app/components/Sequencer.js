@@ -1,200 +1,65 @@
 import React from "react";
-
-// lowest level comp is Box
-class Gridbox extends React.Component{
-constructor(props){
-    super();
-    this.state = {
-        index: props.index,
-        value: props.value
-    };
-}
-
-render() { // change to pass in props rather than hold in state
-    var boxColor;
-    if(this.props.blackKey){
-        if(this.props.value){
-            boxColor = "#bbbbbb"
-        }else{
-            boxColor = "#000000";
-        }
-    }else{
-        if(this.props.value){
-            boxColor = "#ffffff"
-        }else{
-            boxColor = "#555555"
-        }
-    }
-    var boxStyle ={
-        background: boxColor,
-        margin: 1, 
-        width: 25,
-        height: 25
-    }
-    return (
-    <div 
-        className='grid-box' 
-        style={boxStyle} 
-        onClick={this.props.handleClick}
-    > 
-        {/* {this.props.index}  */}
-    </div>
-    );
-}
-};
-
-// column of boxes
-class Col extends React.Component{
-constructor(props){
-    super();
-    this.state = {
-        index: props.index,
-        voices: props.voices,
-        notesActive: props.notesActive
-    };
-    this.handleClick = this.handleClick.bind(this);
-}
-
-handleClick(row){
-    const column = this.props.index;
-    const notesActive = this.state.notesActive.slice();
-    
-    notesActive[row] = !notesActive[row];
-    this.props.handleClick(column, row)
-    console.log("c " + column + " r " + row)
-    this.setState({notesActive: notesActive})
-}
-
-renderBox(i) {      
-    return (
-        <Gridbox 
-            index={i} 
-            value={this.state.notesActive[i]}
-            blackKey = {true}
-            handleClick={this.handleClick}
-            key={i}
-        />
-    );
-  }
-
-render() {
-    var colStyle ={
-        float: "left",
-        margin: 1, 
-        width: 25
-    }
-    
-    var cols= [];
-    {
-      for (var i = 0; i < this.state.voices; i++){
-          cols.push(this.renderBox(i));
-        }
-    }return (   
-         <div className="grid-col" style={colStyle}>
-            {cols}
-          </div>
-    );
-}
-};
-
-export class Grid extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-    voices: 4,
-    beats: 16,
-    gridstate: Array(16).fill(Array(4).fill(false))
-    };
-    this.handleClick = this.handleClick.bind(this)
-  }
-  
-  handleClick(i, j){ // beat, note
-    // update box state
-    console.log("got : " + i + " and " + j);
-    var gridstate = this.state.gridstate.slice();
-    // console.log("gstate " + gridstate);
-    // console.log(j);
-    //gridstate[i][j] = !(gridstate[i][j]);
-    
-    this.setState({
-        gridstate: gridstate
-    });
-  }
-  
-  renderCol(currentCol) {
-
-    return (
-        <Col
-            index={currentCol} 
-            voices = {this.state.voices}
-            notesActive={this.state.gridstate[currentCol]} 
-            handleClick={() => this.handleClick(currentCol)}
-            key={currentCol}
-        />
-    );
-  }
-
-  render() {
-    var gridContainerStyle = {
-            padding: 10, 
-            marginTop: 10, 
-            display: "inline-block",
-            float: "right",
-            backgroundColor: "#aaabbb",
-            borderRadius: "1%",
-            width: 600,
-            height: 400,
-        };
-
-    var gridStyle = {
-       float: "left"
-    }
-    
-    var cols= [];
-    {
-      for (var i = 0; i < this.state.beats; i++){
-          cols.push(this.renderCol(i));
-        }
-    }
-    return (
-      <div>
-        <div className="grid-container" style ={gridContainerStyle}> 
-          The grid <br/>
-          
-          <div className="grid-col" style={gridStyle}>
-            {cols}
-          </div>
-          <br/>
-          after grid
-        </div>
-        below
-      </div>
-    );
-  }
-}
+import {Grid} from "./Grid";
+import {SeqControls} from "./SeqControls";
 
 export class Seq extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            selectedScale: "scale01",
+            scaleSteps: [0,1,2,3,4,5,6,7,8,9,10,11]
+        }
+        this.handleScaleChange = this.handleScaleChange.bind(this);
+    }
+    handleScaleChange(changeEvent){
+        const newScale = changeEvent.target.value;
+        console.log("scale change: " + newScale);
+        var majorScale = [0,2,4,5,7,9,11];
+        var minorScale = [0,2,3,5,7,9,10];
+        var chromaticScale = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        var scaleSteps = []
+        if(newScale === 'scale01'){
+            console.log("chrom");
+            scaleSteps = chromaticScale;
+        }else if(newScale === 'scale02'){
+            console.log("maj");
+            scaleSteps = majorScale;
+        }else if(newScale === 'scale03'){
+            console.log("scale 03 - minor");
+            scaleSteps = minorScale;
+        }else{
+            scaleSteps = chromaticScale;
+        }
+        console.log("change scale steps: " + scaleSteps)
+        this.setState({
+            selectedScale:newScale,
+            scaleSteps: scaleSteps
+        });
+    }
   render() {
-      var seqStyle = {
-          width: 800,
-          height: 500,
-          display: "inline-block",
-          backgroundColor: "#baabbb",
-          borderRadius: "1%",
-          webkitFilter: "drop-shadow(0px 0px 5px #666)",
-          filter: "drop-shadow(0px 0px 5px #666)"
-        };
+    var seqStyle = {
+        width: 800,
+        height: 400,
+        display: "inline-block",
+        backgroundColor: "#aaaaaa",
+        borderRadius: "1%",
+        webkitFilter: "drop-shadow(0px 0px 5px #666)",
+        filter: "drop-shadow(0px 0px 5px #666)"
+    };
+
+    
     return (
-      <div className="controldiv" style = {seqStyle}>
-        <div className="seq-controls">Controls...</div>
-        <div className="grid">
-          <Grid />
+        <div className="controldiv" style = {seqStyle}>
+            <SeqControls 
+                handleScaleChange={(e)=>this.handleScaleChange(e)}
+                selectedScale = {this.state.selectedScale}
+            />
+            <Grid 
+                channels={24}
+                steps={16}
+                scale={this.state.scaleSteps}
+            />
         </div>
-        <div className="more-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
-        </div>
-      </div>
     );
   }
 }
