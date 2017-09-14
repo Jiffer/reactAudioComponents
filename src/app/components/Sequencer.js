@@ -7,35 +7,36 @@ export class Seq extends React.Component {
         super(props);
         this.state = {
             selectedScale: "scale01",
-            scaleSteps: [0,1,2,3,4,5,6,7,8,9,10,11]
+            scaleSteps: [0,1,2,3,4,5,6,7,8,9,10,11] // defaults to chromatic scale
         }
         this.handleScaleChange = this.handleScaleChange.bind(this);
     }
+    
+    // handle change to scale radio buttons
+    // update the radio button state
+    // update grid view
     handleScaleChange(changeEvent){
-        const newScale = changeEvent.target.value;
-        console.log("scale change: " + newScale);
         var majorScale = [0,2,4,5,7,9,11];
         var minorScale = [0,2,3,5,7,9,10];
         var chromaticScale = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        
+        const newScale = changeEvent.target.value;
         var scaleSteps = []
         if(newScale === 'scale01'){
-            console.log("chrom");
             scaleSteps = chromaticScale;
         }else if(newScale === 'scale02'){
-            console.log("maj");
             scaleSteps = majorScale;
         }else if(newScale === 'scale03'){
-            console.log("scale 03 - minor");
             scaleSteps = minorScale;
         }else{
             scaleSteps = chromaticScale;
         }
-        console.log("change scale steps: " + scaleSteps)
         this.setState({
             selectedScale:newScale,
             scaleSteps: scaleSteps
         });
     }
+
   render() {
     var seqStyle = {
         width: 800,
@@ -47,7 +48,6 @@ export class Seq extends React.Component {
         filter: "drop-shadow(0px 0px 5px #666)"
     };
 
-    
     return (
         <div className="controldiv" style = {seqStyle}>
             <SeqControls 
@@ -55,7 +55,7 @@ export class Seq extends React.Component {
                 selectedScale = {this.state.selectedScale}
             />
             <Grid 
-                channels={24}
+                channels={20}
                 steps={16}
                 scale={this.state.scaleSteps}
             />

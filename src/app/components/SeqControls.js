@@ -3,7 +3,6 @@ import React from "react";
     
 export class SeqControls extends React.Component {
     constructor(props) {
-        console.log("hey " + props.selectedScale)
         super(props);
         this.state = {
             selectedScale: props.selectedScale,
